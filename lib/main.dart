@@ -3,12 +3,15 @@ import 'package:provider/provider.dart';
 import 'package:yoga_flow/screens/home_screen.dart';
 import 'services/audio_service.dart';
 
-
 void main() {
+  WidgetsFlutterBinding.ensureInitialized(); 
   runApp(
     MultiProvider(
       providers: [
-        Provider<AudioService>(create: (_) => AudioService()),
+        ChangeNotifierProvider<AudioService>(
+          create: (_) => AudioService(),
+          lazy: false, 
+        ),
       ],
       child: const MyApp(),
     ),
@@ -24,7 +27,7 @@ class MyApp extends StatelessWidget {
       title: 'Yoga Flow',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.deepPurple, 
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: const HomeScreen(),

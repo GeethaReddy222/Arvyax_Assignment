@@ -34,6 +34,7 @@ dependencies:
   audioplayers: ^6.5.0  # Updated to latest stable
   just_audio: ^0.10.4   # Latest compatible version
   shared_preferences: ^2.5.3
+  audio_session: ^0.1.11
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -95,7 +96,9 @@ flutter:
     - assets/images/Base.png
     - assets/images/Cat.png
     - assets/images/Cow.png
+    - assets/images/yoga.png
     - assets/audio/cat_cow_intro.mp3
     - assets/audio/cat_cow_loop.mp3
     - assets/audio/cat_cow_outro.mp3
+    - assets/audio/meditation_music.mp3
     - assets/poses.json

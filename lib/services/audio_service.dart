@@ -1,74 +1,65 @@
 import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter/foundation.dart';
 
-class AudioService {
-  final AudioPlayer _introPlayer = AudioPlayer();
-  final AudioPlayer _loopPlayer = AudioPlayer();
-  final AudioPlayer _outroPlayer = AudioPlayer();
-  bool _initialized = false;
+class AudioService with ChangeNotifier {
+  final AudioPlayer _player = AudioPlayer();
+  bool _isDisposed = false;
+  bool _isInitialized = false;
+  bool _hasError = false;
 
-  // Audio durations in seconds
-  static const introDuration = 31;
-  static const loopDuration = 14;
-  static const outroDuration = 15;
+  AudioService() {
+    _init();
+  }
 
-  Future<void> init() async {
-    if (_initialized) return;
+  Future<void> _init() async {
+    if (_isDisposed) return;
     
-    await Future.wait([
-      _introPlayer.setSource(AssetSource('audio/cat_cow_intro.mp3')),
-      _loopPlayer.setSource(AssetSource('audio/cat_cow_loop.mp3')),
-      _outroPlayer.setSource(AssetSource('audio/cat_cow_outro.mp3')),
-    ]);
-
-    await Future.wait([
-      _introPlayer.setReleaseMode(ReleaseMode.stop),
-      _loopPlayer.setReleaseMode(ReleaseMode.loop),
-      _outroPlayer.setReleaseMode(ReleaseMode.stop),
-    ]);
-
-    await Future.wait([
-      _introPlayer.setVolume(0.7),
-      _loopPlayer.setVolume(0.7),
-      _outroPlayer.setVolume(0.7),
-    ]);
-
-    _initialized = true;
+    try {
+      await _player.setReleaseMode(ReleaseMode.stop);
+      await _player.setVolume(1.0);
+      _isInitialized = true;
+      _hasError = false;
+      notifyListeners();
+    } catch (e) {
+      debugPrint('AudioService initialization error: $e');
+      _hasError = true;
+      notifyListeners();
+      await Future.delayed(const Duration(seconds: 1));
+      if (!_isDisposed) await _init(); 
+    }
   }
 
-  Future<void> playIntro() async {
-    await _stopAll();
-    await _introPlayer.seek(Duration.zero);
-    await _introPlayer.resume();
+  Future<void> play(String audioPath) async {
+    if (_isDisposed || !_isInitialized) return;
+    
+    try {
+      await _player.stop();
+      await _player.play(AssetSource(audioPath));
+      _hasError = false;
+    } catch (e) {
+      debugPrint('Audio play error: $e');
+      _hasError = true;
+      notifyListeners();
+      throw e;
+    }
   }
 
-  Future<void> playLoop() async {
-    await _stopAll();
-    await _loopPlayer.seek(Duration.zero);
-    await _loopPlayer.resume();
+  Future<void> stop() async {
+    if (_isDisposed) return;
+    try {
+      await _player.stop();
+    } catch (e) {
+      debugPrint('Audio stop error: $e');
+    }
   }
 
-  Future<void> playOutro() async {
-    await _stopAll();
-    await _outroPlayer.seek(Duration.zero);
-    await _outroPlayer.resume();
-  }
+  bool get hasError => _hasError;
+  bool get isInitialized => _isInitialized;
 
-  Future<void> _stopAll() async {
-    await Future.wait([
-      _introPlayer.stop(),
-      _loopPlayer.stop(),
-      _outroPlayer.stop(),
-    ]);
-  }
-
-  Future<void> stopAll() async => _stopAll();
-
+  @override
   Future<void> dispose() async {
-    await _stopAll();
-    await Future.wait([
-      _introPlayer.dispose(),
-      _loopPlayer.dispose(),
-      _outroPlayer.dispose(),
-    ]);
+    _isDisposed = true;
+    await _player.dispose();
+    super.dispose();
   }
 }

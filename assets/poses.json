@@ -28,18 +28,18 @@
         {
           "text": "Come to all fours. Hands below shoulders, knees under hips. Feel the earth beneath you steady, quiet, alive.",
           "startSec": 0,
-          "endSec": 13,
+          "endSec": 14,
           "imageRef": "base"
         },
         {
           "text": "Inhale\u2026 arch your spine, lift your heart. Let your chest open like sunlight breaking through leaves.",
-          "startSec": 13,
-          "endSec": 22,
+          "startSec": 14,
+          "endSec": 23,
           "imageRef": "cat"
         },
         {
           "text": "Exhale\u2026 round your back, tuck your chin. Feel the breath soften you like morning mist.",
-          "startSec": 22,
+          "startSec": 23,
           "endSec": 33,
           "imageRef": "cow"
         }
@@ -49,7 +49,7 @@
       "type": "loop",
       "name": "breath_cycle",
       "audioRef": "loop",
-      "durationSec": 15,
+      "durationSec": 14,
       "iterations": "{{loopCount}}",
       "loopable": true,
       "script": [
@@ -68,7 +68,7 @@
         {
           "text": "Feel your spine flowing like a wave through the trees.",
           "startSec": 10,
-          "endSec": 15,
+          "endSec": 14,
           "imageRef": "base"
         }
       ]
@@ -82,18 +82,18 @@
         {
           "text": "Finish your final round\u2026",
           "startSec": 0,
-          "endSec": 3,
+          "endSec": 2,
           "imageRef": "cat"
         },
         {
           "text": "and return to a neutral spine.",
-          "startSec": 3,
-          "endSec": 6,
+          "startSec": 2,
+          "endSec": 5,
           "imageRef": "cow"
         },
         {
           "text": "Notice the warmth in your back, the ease in your breath. You are supported \u2014 rooted, yet free.",
-          "startSec": 6,
+          "startSec": 5,
           "endSec": 18,
           "imageRef": "base"
         }
