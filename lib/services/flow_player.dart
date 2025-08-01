@@ -19,7 +19,6 @@ class FlowPlayer with ChangeNotifier {
 
   FlowPlayer({required this.flow, required this.audioService});
 
-  // Getters
   int get currentLoopIteration => _currentLoopIteration;
   int get currentScriptIndex => _currentScriptIndex;
   bool get isPlaying => _isPlaying;
@@ -38,13 +37,8 @@ class FlowPlayer with ChangeNotifier {
   double get segmentProgress =>
       _segmentStopwatch.elapsed.inMilliseconds /
       (currentSegment.durationSec * 1000);
-
   Future<void> play() async {
     if (_isPlaying) return;
-    if (!audioService.isInitialized) {
-      debugPrint('Audio service not initialized');
-      return;
-    }
 
     _isPlaying = true;
     _segmentStopwatch.start();
@@ -57,7 +51,7 @@ class FlowPlayer with ChangeNotifier {
     _isPlaying = false;
     _segmentStopwatch.stop();
     _cancelTimers();
-    await audioService.stop();
+    await audioService.stopInstruction();
     notifyListeners();
   }
 
@@ -68,23 +62,16 @@ class FlowPlayer with ChangeNotifier {
     }
 
     try {
-      // Use audioRef instead of audioFile
       String audioPath = _getAudioPathForSegment(currentSegment);
-      debugPrint('Attempting to play audio: $audioPath');
-      await audioService.play(audioPath);
+      await audioService.playInstruction(audioPath);
     } catch (e) {
       debugPrint('Error playing segment audio: $e');
-      notifyListeners();
-      // Continue without audio
-      _startScriptProgression();
-      _segmentTimer = Timer(
-        Duration(seconds: currentSegment.durationSec),
-        _nextSegment,
-      );
-      return;
     }
 
+    // Background music continues playing independently
+    notifyListeners();
     _startScriptProgression();
+
     _segmentTimer = Timer(
       Duration(seconds: currentSegment.durationSec),
       _nextSegment,
@@ -92,7 +79,6 @@ class FlowPlayer with ChangeNotifier {
   }
 
   String _getAudioPathForSegment(FlowSegment segment) {
-    // Map segment types to your specific audio files
     switch (segment.name) {
       case 'intro':
         return 'audio/cat_cow_intro.mp3';
@@ -101,7 +87,7 @@ class FlowPlayer with ChangeNotifier {
       case 'outro':
         return 'audio/cat_cow_outro.mp3';
       default:
-        return 'audio/cat_cow_loop.mp3'; // default fallback
+        return 'audio/cat_cow_loop.mp3';
     }
   }
 

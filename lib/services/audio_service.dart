@@ -2,64 +2,66 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
 
 class AudioService with ChangeNotifier {
-  final AudioPlayer _player = AudioPlayer();
-  bool _isDisposed = false;
-  bool _isInitialized = false;
-  bool _hasError = false;
+  final AudioPlayer _instructionPlayer = AudioPlayer();
+  final AudioPlayer _bgPlayer = AudioPlayer();
+  bool _bgMusicPlaying = false;
+  double _bgVolume = 0.5;
 
-  AudioService() {
-    _init();
-  }
-
-  Future<void> _init() async {
-    if (_isDisposed) return;
-    
+  Future<void> playInstruction(String audioPath) async {
     try {
-      await _player.setReleaseMode(ReleaseMode.stop);
-      await _player.setVolume(1.0);
-      _isInitialized = true;
-      _hasError = false;
-      notifyListeners();
+      // Only manage instruction audio
+      await _instructionPlayer.stop();
+      await _instructionPlayer.play(AssetSource(audioPath));
     } catch (e) {
-      debugPrint('AudioService initialization error: $e');
-      _hasError = true;
-      notifyListeners();
-      await Future.delayed(const Duration(seconds: 1));
-      if (!_isDisposed) await _init(); 
+      debugPrint('Error playing instruction: $e');
     }
   }
 
-  Future<void> play(String audioPath) async {
-    if (_isDisposed || !_isInitialized) return;
-    
+  Future<void> stopInstruction() async {
     try {
-      await _player.stop();
-      await _player.play(AssetSource(audioPath));
-      _hasError = false;
+      await _instructionPlayer.stop();
     } catch (e) {
-      debugPrint('Audio play error: $e');
-      _hasError = true;
+      debugPrint('Error stopping instruction: $e');
+    }
+  }
+
+  Future<void> playBackgroundMusic() async {
+    if (_bgMusicPlaying) return;
+    try {
+      await _bgPlayer.setReleaseMode(ReleaseMode.loop);
+      await _bgPlayer.setVolume(_bgVolume);
+      await _bgPlayer.play(AssetSource('audio/meditation_music.mp3'));
+      _bgMusicPlaying = true;
       notifyListeners();
-      throw e;
-    }
-  }
-
-  Future<void> stop() async {
-    if (_isDisposed) return;
-    try {
-      await _player.stop();
     } catch (e) {
-      debugPrint('Audio stop error: $e');
+      debugPrint('Error playing background music: $e');
     }
   }
 
-  bool get hasError => _hasError;
-  bool get isInitialized => _isInitialized;
+  Future<void> stopBackgroundMusic() async {
+    if (!_bgMusicPlaying) return;
+    try {
+      await _bgPlayer.stop();
+      _bgMusicPlaying = false;
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error stopping background music: $e');
+    }
+  }
+
+  Future<void> setBackgroundVolume(double volume) async {
+    _bgVolume = volume.clamp(0.0, 1.0);
+    await _bgPlayer.setVolume(_bgVolume);
+    notifyListeners();
+  }
+
+  bool get isBackgroundMusicPlaying => _bgMusicPlaying;
+  double get backgroundVolume => _bgVolume;
 
   @override
   Future<void> dispose() async {
-    _isDisposed = true;
-    await _player.dispose();
+    await _instructionPlayer.dispose();
+    await _bgPlayer.dispose();
     super.dispose();
   }
 }

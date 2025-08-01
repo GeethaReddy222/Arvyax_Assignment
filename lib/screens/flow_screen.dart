@@ -33,7 +33,7 @@ class _FlowScreenState extends State<FlowScreen> {
   Widget build(BuildContext context) {
     final currentScript = _flowPlayer.currentScript;
     final currentImageRef = _flowPlayer.currentImageRef;
-    final audioService = Provider.of<AudioService>(context);
+    
 
     return Scaffold(
       appBar: AppBar(
@@ -72,7 +72,9 @@ class _FlowScreenState extends State<FlowScreen> {
                       height: 300,
                       decoration: BoxDecoration(
                         image: DecorationImage(
-                          image: AssetImage(widget.flow.assets.getImagePath(currentImageRef)),
+                          image: AssetImage(
+                            widget.flow.assets.getImagePath(currentImageRef),
+                          ),
                           fit: BoxFit.contain,
                         ),
                       ),
@@ -91,34 +93,6 @@ class _FlowScreenState extends State<FlowScreen> {
               ),
             ],
           ),
-          if (audioService.hasError)
-            Positioned(
-              bottom: 20,
-              left: 20,
-              right: 20,
-              child: Material(
-                color: Colors.redAccent,
-                borderRadius: BorderRadius.circular(8),
-                child: Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.error_outline, color: Colors.white),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Text(
-                          'Audio playback issue. Trying to reconnect...',
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyMedium
-                              ?.copyWith(color: Colors.white),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
         ],
       ),
     );

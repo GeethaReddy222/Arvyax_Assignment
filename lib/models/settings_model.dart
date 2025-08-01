@@ -1,43 +1,39 @@
-
 import 'package:flutter/foundation.dart';
-import 'package:audioplayers/audioplayers.dart';
+import 'package:yoga_flow/services/audio_service.dart';
 
 class SettingsModel with ChangeNotifier {
-  bool _backgroundMusicEnabled = true;
-  bool _darkModeEnabled = false;
-  final AudioPlayer _audioPlayer = AudioPlayer();
-  bool _isPlaying = false;
+  bool _backgroundMusicEnabled = false;
+  final AudioService _audioService;
+
+  SettingsModel({required AudioService audioService}) 
+      : _audioService = audioService {
+    _init();
+  }
+
+  Future<void> _init() async {
+    _backgroundMusicEnabled = _audioService.isBackgroundMusicPlaying;
+  }
 
   bool get backgroundMusicEnabled => _backgroundMusicEnabled;
-  bool get darkModeEnabled => _darkModeEnabled;
 
   Future<void> toggleBackgroundMusic(bool value) async {
+    if (_backgroundMusicEnabled == value) return;
+    
     _backgroundMusicEnabled = value;
     
-    if (_backgroundMusicEnabled && !_isPlaying) {
-      await _playBackgroundMusic();
-    } else if (!_backgroundMusicEnabled && _isPlaying) {
-      await _audioPlayer.stop();
-      _isPlaying = false;
+    if (_backgroundMusicEnabled) {
+      await _audioService.playBackgroundMusic();
+    } else {
+      await _audioService.stopBackgroundMusic();
     }
     
     notifyListeners();
   }
 
-  Future<void> _playBackgroundMusic() async {
-    try {
-      await _audioPlayer.play(AssetSource('audio/meditation_music.mp3'));
-      _isPlaying = true;
-      _audioPlayer.setReleaseMode(ReleaseMode.loop); // Loop the music
-    } catch (e) {
-      debugPrint('Error playing music: $e');
-    }
+  Future<void> setBackgroundVolume(double volume) async {
+    await _audioService.setBackgroundVolume(volume);
+    notifyListeners();
   }
 
-
-  @override
-  void dispose() {
-    _audioPlayer.dispose();
-    super.dispose();
-  }
+  double get backgroundVolume => _audioService.backgroundVolume;
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:yoga_flow/models/segment.dart';
 import '../models/yoga_flow.dart';
-import 'flow_screen.dart';
+import 'package:yoga_flow/screens/flow_screen.dart';
 
 class PreviewScreen extends StatelessWidget {
   final YogaFlow flow;

@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:yoga_flow/services/audio_service.dart';
+import 'package:yoga_flow/models/settings_model.dart';
 import 'package:yoga_flow/screens/home_screen.dart';
-import 'services/audio_service.dart';
 
 void main() {
-  WidgetsFlutterBinding.ensureInitialized(); 
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider<AudioService>(
-          create: (_) => AudioService(),
-          lazy: false, 
+        ChangeNotifierProvider(create: (context) => AudioService()),
+        ChangeNotifierProxyProvider<AudioService, SettingsModel>(
+          create: (context) => SettingsModel(
+            audioService: Provider.of<AudioService>(context, listen: false),  
+          ),
+          update: (context, audioService, previous) => SettingsModel(
+            audioService: audioService, 
+          ),
         ),
       ],
       child: const MyApp(),
@@ -24,10 +29,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Yoga Flow',
+      title: 'YogaFlow',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.deepPurple, 
+        primarySwatch: Colors.deepPurple,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: const HomeScreen(),

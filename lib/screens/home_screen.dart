@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:yoga_flow/models/yoga_flow.dart';
 import 'package:yoga_flow/screens/preview_screen.dart';
+import 'package:yoga_flow/screens/settings_screen.dart'; // Import settings screen
 import 'package:yoga_flow/utils/assets_loader.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -33,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
               style: TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 22,
-                color:  Colors.deepPurple,
+                color: Colors.deepPurple,
                 letterSpacing: 1.1,
               ),
             ),
@@ -42,6 +43,19 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings, color: Colors.deepPurple),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const SettingsScreen(),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: Container(
         decoration: const BoxDecoration(
